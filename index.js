@@ -75,47 +75,10 @@ function goals(state = [], action) {
   }
 }
 
-function app(state = {}, action) {
-  return {
-    todos: todos(state.todos, action),
-    goals: goals(state.goals, action)
-  }
-}
-
-function createStore(reducer) {
-  // The store should have four parts
-  // 1. The state
-  // 2. Get the state (getState)
-  // 3. Listen to changes on the state (subscribe)
-  // 4. Update the state (dispatch)
-
-  let state
-  let listeners = []
-
-  const getState = () => state
-
-  const subscribe = (listener) => {
-    listeners.push(listener)
-    return () => {
-      listeners = listeners.filter((l) => l !== listener)
-    }
-  }
-
-  const dispatch = (action) => {
-    // call todos...
-    state = reducer(state, action)
-    // loop over listeners and invoke them
-    listeners.forEach((listener) => listener())
-  }
-
-  return {
-    getState,
-    subscribe,
-    dispatch
-  }
-}
-
-const store = createStore(app)
+const store = Redux.createStore(Redux.combineReducers({
+  todos,
+  goals
+}))
 
 store.subscribe(() => {
   const { goals, todos } = store.getState()
