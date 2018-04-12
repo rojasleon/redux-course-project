@@ -49,6 +49,16 @@ function removeGoalAction(id) {
   }
 }
 
+function checkAndDispatch(store, action) {
+  if(action.type === ADD_TODO && action.todo.name.toLowerCase().indexOf('bitcoin') !== -1) {
+    return alert("Nope. That's a bad idea")
+  }
+  if(action.type === ADD_GOAL && action.goal.name.toLowerCase().indexOf('bitcoin') !== -1) {
+    return alert("Nope. That's a bad idea")
+  }
+  return store.dispatch(action)
+}
+
 function todos (state = [], action) {
   switch (action.type) {
     case ADD_TODO:
@@ -128,7 +138,7 @@ function addTodo() {
   const name = input.value
   input.value = ''
 
-  store.dispatch(addTodoAction({
+  checkAndDispatch(store, addTodoAction({
     id: generateId(),
     name,
     complete: false
@@ -148,10 +158,9 @@ function addGoal() {
   const name = input.value
   input.value = ''
 
-  store.dispatch(addGoalAction({
+  checkAndDispatch(store,addGoalAction({
     id: generateId(),
-    name,
-    complete: false
+    name
   }))
 }
 document.getElementById('todoBtn').addEventListener('click', addTodo)
