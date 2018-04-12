@@ -4,6 +4,9 @@
   2. They depend only on the arguments passed into them.
   3. Never produce any side effects.
 */
+function generateId () {
+  return Math.random().toString(36).substring(2) + (new Date()).getTime().toString(36);
+}
 
 const ADD_TODO = 'ADD_TODO'
 const REMOVE_TODO = 'REMOVE_TODO'
@@ -118,31 +121,28 @@ store.subscribe(() => {
   console.log('The new state is: ', store.getState())
 })
 
-store.dispatch(addTodoAction({
-  id: 0,
-  name: 'Walk the dog',
-  complete: false
-}))
-store.dispatch(addTodoAction({
-  id: 1,
-  name: 'Wash the car',
-  complete: false
-}))
-store.dispatch(addTodoAction({
-  id: 2,
-  name: 'Go to the gym',
-  complete: true
-}))
+// DOM CODE
+function addTodo() {
+  const input = document.getElementById('todo')
+  const name = input.value
+  input.value = ''
 
-store.dispatch(removeTodoAction(1))
-store.dispatch(toggleTodoAction(0))
+  store.dispatch(addTodoAction({
+    id: generateId(),
+    name,
+    complete: false
+  }))
+}
+function addGoal() {
+  const input = document.getElementById('goal')
+  const name = input.value
+  input.value = ''
 
-store.dispatch(addGoalAction({
-  id: 0,
-  name: 'Learn Redux'
-}))
-store.dispatch(addGoalAction({
-  id: 1,
-  name: 'Lose 20 pounds'
-}))
-store.dispatch(removeGoalAction(0))
+  store.dispatch(addGoalAction({
+    id: generateId(),
+    name,
+    complete: false
+  }))
+}
+document.getElementById('todoBtn').addEventListener('click', addTodo)
+document.getElementById('goalBtn').addEventListener('click', addGoal)
