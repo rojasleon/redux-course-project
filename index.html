@@ -9,27 +9,23 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/redux/3.7.2/redux.min.js"></script>
 </head>
 <body>
-  <div>
-    <h1>Todo list</h1>
-    <input type="text" id="todo" placeholder="Add todo">
-    <button id="todoBtn">Add todo</button>
-    <ul id="todos"></ul>
-  </div>
-
-  <div>
-    <h1>Goals List</h1>
-    <input type="text" id="goal" placeholder="Add Goal">
-    <button id="goalBtn">Add Goal</button>
-    <ul id="goals"></ul>
-  </div>
-
   <div id="app"></div>
   <script src="index.js"></script>
   <script type="text/babel">
   function List(props) {
     return (
       <ul>
-        <li>List</li>
+        {props.items.map(item => (
+          <li key={item.id}>
+            <span
+              onClick={() => props.toggle && props.toggle(item.id)}
+              style={{ textDecoration: item.complete ? 'line-through' : 'none' }}
+            >
+              {item.name}
+            </span>
+            <button onClick={() => props.remove(item)}>X</button>
+          </li>
+        ))}
       </ul>
     )
   }
@@ -47,6 +43,13 @@
         complete: false
       }))
     }
+    removeItem = (todo) => {
+      this.props.store.dispatch(removeTodoAction(todo.id))
+    }
+
+    toggleItem = (todo) => {
+      this.props.store.dispatch(toggleTodoAction(todo))
+    }
 
     render() {
       return (
@@ -57,8 +60,12 @@
             placeholder="Add Todo"
             ref={(input) => this.input = input}
           />
-          <button onClick={this.addItem}></button>
-          <List />
+          <button onClick={this.addItem}>Add</button>
+          <List
+            items={this.props.todos}
+            remove={this.removeItem}
+            toggle={this.toggleItem}
+          />
         </div>
       )
     }
@@ -76,6 +83,11 @@
         complete: false
       }))
     }
+
+    removeItem = (goal) => {
+      this.props.store.dispatch(removeGoalAction(goal.id))
+    }
+
     render() {
       return (
         <div>
@@ -85,19 +97,29 @@
             placeholder="Add goal"
             ref={(input) => this.input = input}
           />
-          <button onClick={this.addItem}></button>
-          <List />
+          <button onClick={this.addItem}>Add</button>
+          <List
+            items={this.props.goals}
+            remove={this.removeItem}
+          />
         </div>
       )
     }
   }
 
   class App extends React.Component {
+    componentDidMount() {
+      const { store } = this.props
+
+      store.subscribe(() => this.forceUpdate())
+    }
     render() {
+      const { store } = this.props
+      const { todos, goals } = store.getState()
       return (
         <div>
-          <Todos store={this.props.store} />
-          <Goals store={this.props.store} />
+          <Todos todos={todos} store={store} />
+          <Goals goals={goals} store={store} />
         </div>
       )
     }
