@@ -49,14 +49,14 @@ function removeGoalAction(id) {
   }
 }
 
-function checkAndDispatch(store, action) {
+const checker = (store) => (next) => (action) => {
   if(action.type === ADD_TODO && action.todo.name.toLowerCase().indexOf('bitcoin') !== -1) {
     return alert("Nope. That's a bad idea")
   }
   if(action.type === ADD_GOAL && action.goal.name.toLowerCase().indexOf('bitcoin') !== -1) {
     return alert("Nope. That's a bad idea")
   }
-  return store.dispatch(action)
+  return next(action)
 }
 
 function todos (state = [], action) {
@@ -88,7 +88,7 @@ function goals(state = [], action) {
 const store = Redux.createStore(Redux.combineReducers({
   todos,
   goals
-}))
+}), Redux.applyMiddleware(checker))
 
 store.subscribe(() => {
   const { goals, todos } = store.getState()
@@ -138,7 +138,7 @@ function addTodo() {
   const name = input.value
   input.value = ''
 
-  checkAndDispatch(store, addTodoAction({
+  store.dispatch( addTodoAction({
     id: generateId(),
     name,
     complete: false
@@ -158,7 +158,7 @@ function addGoal() {
   const name = input.value
   input.value = ''
 
-  checkAndDispatch(store,addGoalAction({
+  store.dispatch(addGoalAction({
     id: generateId(),
     name
   }))
