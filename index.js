@@ -13,6 +13,7 @@ const REMOVE_TODO = 'REMOVE_TODO'
 const TOGGLE_TODO = 'TOGGLE_TODO'
 const ADD_GOAL = 'ADD_GOAL'
 const REMOVE_GOAL = 'REMOVE_GOAL'
+const RECEIVE_DATA = 'RECEIVE_DATA'
 
 function addTodoAction(todo) {
   return {
@@ -49,6 +50,14 @@ function removeGoalAction(id) {
   }
 }
 
+function receiveDataAction(todos, goals) {
+  return {
+    type: RECEIVE_DATA,
+    todos,
+    goals
+  }
+}
+
 const checker = (store) => (next) => (action) => {
   if(action.type === ADD_TODO && action.todo.name.toLowerCase().indexOf('bitcoin') !== -1) {
     return alert("Nope. That's a bad idea")
@@ -78,6 +87,8 @@ function todos (state = [], action) {
       return state.map((todo) => todo.id !== action.id ? todo :
         Object.assign({}, todo, { complete: !todo.complete })
       )
+    case RECEIVE_DATA:
+      return action.todos
     default:
       return state
   }
@@ -89,6 +100,8 @@ function goals(state = [], action) {
       return state.concat([action.goal])
     case REMOVE_GOAL:
       return state.filter((goal) => goal.id !== action.id)
+    case RECEIVE_DATA:
+      return action.goals
     default:
       return state
   }
